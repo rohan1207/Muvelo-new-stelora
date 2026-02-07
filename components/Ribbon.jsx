@@ -1,0 +1,70 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+const words = ['Muvelo', 'Designed', 'To', 'Move'];
+
+const Ribbon = ({ theme = 'dark' }) => {
+  const isDark = theme === 'dark';
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 640);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  const marqueeVariants = {
+    animate: {
+      x: [0, '-50%'],
+      transition: {
+        x: {
+          repeat: Infinity,
+          repeatType: 'loop',
+          duration: isSmallScreen ? 5 : 25,
+          ease: 'linear',
+        },
+      },
+    },
+  };
+
+  const bgColor = isDark ? 'bg-black' : 'bg-[#FAF9F6]';
+  const textColor = isDark ? 'text-white' : 'text-[#1a1a1a]';
+  const outlineColor = isDark ? '#ffffff' : '#1a1a1a';
+
+  const Word = ({ children, isOutlined }) => (
+    <span
+      className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-8xl font-black uppercase whitespace-nowrap mx-3 sm:mx-4 md:mx-6 lg:mx-8 ${
+        isOutlined ? 'text-transparent' : textColor
+      }`}
+      style={
+        isOutlined
+          ? { WebkitTextStroke: isSmallScreen ? `1px ${outlineColor}` : `2px ${outlineColor}` }
+          : {}
+      }
+    >
+      {children}
+    </span>
+  );
+
+  return (
+    <section className={`py-6 sm:py-8 md:py-10 lg:py-12 ${bgColor} overflow-hidden`}>
+      <motion.div className="flex" variants={marqueeVariants} animate="animate">
+        <div className="flex">
+          {[...words, ...words].map((word, index) => (
+            <Word key={index} isOutlined={index % 2 !== 0}>
+              {word}
+            </Word>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+
+export default Ribbon;

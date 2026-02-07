@@ -1,0 +1,72 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import Lenis from 'lenis';
+import { useTheme } from '@/contexts/ThemeContext';
+import Hero from '@/components/Hero';
+import NavBar from '@/components/NavBar';
+import ThemeToggle from '@/components/ThemeToggle';
+import Footer from '@/components/Footer';
+import SecondSection from '@/components/SecondSection';
+import TrendingSocials from '@/components/TrendingSocials';
+import BestSellers from '@/components/BestSellers';
+import ProductShowcase from '@/components/ProductShowcase';
+import Banner from '@/components/Banner';
+import LiveDemo from '@/components/LiveDemo';
+import WhyChooseUs from '@/components/WhyChooseUs';
+import Ribbon from '@/components/Ribbon';
+import OwnerMessage from '@/components/OwnerMessage';
+import DynamicCarousel from '@/components/DynamicCarousel';
+
+export default function HomePage() {
+  const lenisRef = useRef(null);
+  const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smooth: true,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+    });
+
+    lenisRef.current = lenis;
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
+  return (
+    <div className="relative w-full overflow-x-hidden">
+      <NavBar theme={theme} />
+      <ThemeToggle theme={theme} onToggleTheme={toggleTheme} />
+      <Hero theme={theme} />
+      <SecondSection theme={theme === 'dark' ? 'dark' : 'light'} />
+      <BestSellers theme={theme === 'dark' ? 'dark' : 'light'} />
+      <ProductShowcase theme={theme === 'dark' ? 'dark' : 'light'} />
+      <Banner theme={theme === 'dark' ? 'dark' : 'light'} />
+      <TrendingSocials theme={theme === 'dark' ? 'dark' : 'light'} />
+      <LiveDemo theme={theme === 'dark' ? 'dark' : 'light'} />
+      <WhyChooseUs theme={theme === 'dark' ? 'dark' : 'light'} />
+      <Ribbon theme={theme === 'dark' ? 'dark' : 'light'} />
+      <OwnerMessage theme={theme === 'dark' ? 'dark' : 'light'} />
+      <DynamicCarousel theme={theme === 'dark' ? 'dark' : 'light'} />
+      <WhyChooseUs theme={theme === 'dark' ? 'dark' : 'light'} />
+      <Footer theme={theme} />
+    </div>
+  );
+}
