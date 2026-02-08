@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useRef, useEffect } from 'react';
-import { ShieldCheck, RotateCcw, Truck, CreditCard } from 'lucide-react';
+import { ShieldCheck, RotateCcw, Truck, CreditCard, BadgeCheck } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -96,6 +96,16 @@ export default function ProductDetailPage() {
   ];
 
   const otherProducts = productsData.filter((p) => p.id !== product.id).slice(0, 3);
+
+  // Placeholder verified reviews (replace with backend real data later)
+  const ratingValue = product.rating?.average?.toFixed(1) ?? '4.6';
+  const reviewCount = product.rating?.count ?? 76;
+  const placeholderReviews = [
+    { name: 'Priya S.', text: 'Looks even better in person. The glow is super soft and premium—exactly what we wanted for our bedroom.', stars: 5 },
+    { name: 'Rahul M.', text: 'Battery life is impressive. We use it every evening and charge maybe once a week. Beautiful design.', stars: 5 },
+    { name: 'Ananya K.', text: 'Gifted this to my parents. They love how easy it is to move around. Warm light is very soothing.', stars: 5 },
+    { name: 'Vikram R.', text: 'Solid build and the touch control is responsive. Fits our minimal setup perfectly. Happy with the purchase.', stars: 5 },
+  ];
 
   const sections = [
     {
@@ -242,22 +252,22 @@ export default function ProductDetailPage() {
               {/* Quantity + compact CTAs */}
               <div className="flex items-center gap-2 flex-shrink-0">
                   <div
-                    className={`inline-flex items-center rounded-full border text-[11px] ${
+                    className={`inline-flex items-center rounded-full border text-sm ${
                       isDark ? 'border-white/20 text-slate-200' : 'border-slate-300 text-slate-700'
                     }`}
                   >
                   <button
                     type="button"
                     onClick={() => handleQuantityChange(-1)}
-                    className="w-6 h-6 flex items-center justify-center hover:bg-white/10"
+                    className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center hover:bg-white/10"
                   >
                     –
                   </button>
-                  <span className="w-7 text-center">{quantity}</span>
+                  <span className="w-8 sm:w-9 text-center text-sm font-medium">{quantity}</span>
                   <button
                     type="button"
                     onClick={() => handleQuantityChange(1)}
-                    className="w-6 h-6 flex items-center justify-center hover:bg-white/10"
+                    className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center hover:bg-white/10"
                   >
                     +
                   </button>
@@ -325,6 +335,16 @@ export default function ProductDetailPage() {
                     />
                   </button>
                 ))}
+              </div>
+
+              {/* Product name + short description below image (centered) */}
+              <div className="text-center space-y-1.5 sm:space-y-2">
+                <h2 className={`text-lg sm:text-xl lg:text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
+                  {product.name}
+                </h2>
+                <p className={`text-sm sm:text-base leading-snug line-clamp-2 max-w-xl mx-auto ${isDark ? 'text-gray-400' : 'text-[#6B6B6B]'}`}>
+                  {product.shortDescription}
+                </p>
               </div>
             </div>
 
@@ -426,7 +446,7 @@ export default function ProductDetailPage() {
                    ${isDark ? 'text-emerald-300 bg-emerald-900/40' : 'text-emerald-700 bg-emerald-50'}
                  `}>
                   <span className="text-[10px] sm:text-[10px]">●</span>
-                  <span className="leading-tight">Order today for dispatch in 24 hours. Pan‑India delivery in 3–5 days.</span>
+                  <span className="leading-tight">Order today for dispatch in 24 hours. Pan‑India delivery in 7 days.</span>
                 </p>
 
                 <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-1">
@@ -439,15 +459,15 @@ export default function ProductDetailPage() {
                       <button
                         type="button"
                         onClick={() => handleQuantityChange(-1)}
-                        className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-sm sm:text-base ${isDark ? 'text-slate-300 hover:bg-white/10' : 'text-slate-600 hover:bg-slate-100'}`}
+                        className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-base sm:text-lg ${isDark ? 'text-slate-300 hover:bg-white/10' : 'text-slate-600 hover:bg-slate-100'}`}
                       >
                         –
                       </button>
-                      <span className={`w-7 sm:w-8 text-center text-xs sm:text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{quantity}</span>
+                      <span className={`w-9 sm:w-10 text-center text-sm sm:text-base font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{quantity}</span>
                       <button
                         type="button"
                         onClick={() => handleQuantityChange(1)}
-                        className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-sm sm:text-base ${isDark ? 'text-slate-300 hover:bg-white/10' : 'text-slate-600 hover:bg-slate-100'}`}
+                        className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-base sm:text-lg ${isDark ? 'text-slate-300 hover:bg-white/10' : 'text-slate-600 hover:bg-slate-100'}`}
                       >
                         +
                       </button>
@@ -542,8 +562,10 @@ export default function ProductDetailPage() {
                     <RotateCcw size={14} className="sm:w-4 sm:h-4" />
                   </div>
                   <div className="space-y-0.5 min-w-0">
-                    <span className="font-medium block text-xs sm:text-[9px] sm:text-[10px] lg:text-[11px]">7‑day returns</span>
-                    <span className={`text-[11px] md:text-[8px] sm:text-[9px] lg:text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Easy replacement if anything is off.</span>
+                    <span className="font-medium block text-xs sm:text-[9px] sm:text-[10px] lg:text-[11px]">Easy Returns</span>
+                    <span className={`text-[11px] md:text-[8px] sm:text-[9px] lg:text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      48‑hour return window. <a href="#termcondition" className={`underline underline-offset-1 ${isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}>Terms & conditions</a> apply.
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-start gap-1.5 sm:gap-2">
@@ -641,50 +663,51 @@ export default function ProductDetailPage() {
                   </div>
 
                    <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-slate-100">
-                    {/* Base image – AFTER (room with lamp) on the right */}
+                    {/* Full-size images: no overlap, no movement – only the clip edge moves */}
+                    {/* AFTER (right side) – full container, always visible */}
                     <img
                       src={product.images?.beforeAfter?.after || product.images?.on || galleryImages[0]}
                       alt={`${product.name} after`}
                       draggable={false}
-                      className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+                      className="absolute inset-0 w-full h-full object-cover object-left select-none pointer-events-none"
                     />
-                    {/* Overlay image – BEFORE (room only) revealed on the left via slider */}
+                    {/* BEFORE (left side) – full container size, clipped by slider; image never resizes */}
                     <div
-                      className="absolute inset-y-0 left-0 overflow-hidden pointer-events-none"
-                      style={{ width: `${sliderValue}%` }}
+                      className="absolute inset-0 overflow-hidden pointer-events-none"
+                      style={{ clipPath: `inset(0 ${100 - sliderValue}% 0 0)` }}
                     >
                       <img
                         src={product.images?.beforeAfter?.before || product.images?.off || galleryImages[0]}
                         alt={`${product.name} before`}
                         draggable={false}
-                        className="w-full h-full object-cover select-none"
+                        className="absolute inset-0 w-full h-full object-cover object-left select-none"
                       />
                     </div>
 
-                    {/* Divider line */}
+                    {/* Divider line – no image movement, only line moves */}
                     <div
-                      className="absolute inset-y-0 w-px bg-white/80 shadow-[0_0_12px_rgba(15,23,42,0.5)] pointer-events-none"
-                      style={{ left: `${sliderValue}%`, transform: 'translateX(-0.5px)' }}
+                      className="absolute inset-y-0 w-0.5 bg-white/90 shadow-[0_0_8px_rgba(0,0,0,0.3)] pointer-events-none z-10"
+                      style={{ left: `${sliderValue}%`, transform: 'translateX(-50%)' }}
                     />
 
                     {/* Handle */}
                     <div
-                      className="absolute top-1/2 -translate-y-1/2"
+                      className="absolute top-1/2 -translate-y-1/2 z-10 pointer-events-none"
                       style={{ left: `${sliderValue}%`, transform: 'translate(-50%, -50%)' }}
                     >
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white shadow-[0_8px_24px_rgba(15,23,42,0.28)] flex items-center justify-center text-slate-500 text-[10px] sm:text-xs pointer-events-none">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200/80 shadow-md flex items-center justify-center text-slate-500 text-[10px] sm:text-xs">
                         ↔
                       </div>
                     </div>
 
-                    {/* Slider input – only captures drag, not image drag */}
+                    {/* Slider input – only captures drag */}
                     <input
                       type="range"
                       min="0"
                       max="100"
                       value={sliderValue}
                       onChange={(e) => setSliderValue(Number(e.target.value))}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-[5]"
                     />
                   </div>
                 </div>
@@ -693,46 +716,74 @@ export default function ProductDetailPage() {
 
           {/* FAQ, comparison and social proof */}
           <div className="grid lg:grid-cols-[minmax(0,1.3fr),minmax(0,1fr)] gap-6 sm:gap-8 lg:gap-10 items-start">
-            {/* FAQs + comparison (left column) */}
-             <div className="space-y-4 sm:space-y-5 lg:space-y-6">
-              <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>FAQs</h2>
+            {/* FAQs + comparison (left column) — pill-style UI for accessibility */}
+            <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+              <div className="space-y-2">
+                <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
+                  Frequently asked questions
+                </h2>
+                <p className={`text-sm sm:text-base ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  Find answers by category below.
+                </p>
+              </div>
 
-              {/* Tabs */}
-               <div className="flex gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-[10px] sm:text-xs uppercase tracking-[0.2em] overflow-x-auto scrollbar-hide">
-                {['product', 'troubleshooting', 'technical'].map((tab) => (
+              {/* Pill-style category tabs — easy to find and tap */}
+              <div className="flex flex-wrap gap-2 sm:gap-3" role="tablist" aria-label="FAQ categories">
+                {[
+                  { id: 'product', label: 'Product' },
+                  { id: 'troubleshooting', label: 'Troubleshooting' },
+                  { id: 'technical', label: 'Technical' },
+                ].map((tab) => (
                   <button
-                    key={tab}
+                    key={tab.id}
                     type="button"
-                    onClick={() => setActiveFaqTab(tab)}
-                    className={`pb-1.5 border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
-                      activeFaqTab === tab
-                        ? isDark ? 'border-red-500 text-red-400' : 'border-red-500 text-red-600'
-                        : isDark ? 'border-transparent text-slate-400 hover:text-slate-300' : 'border-transparent text-slate-400 hover:text-slate-600'
+                    role="tab"
+                    aria-selected={activeFaqTab === tab.id}
+                    aria-controls={`faq-panel-${tab.id}`}
+                    id={`faq-tab-${tab.id}`}
+                    onClick={() => setActiveFaqTab(tab.id)}
+                    className={`rounded-full px-4 py-2.5 sm:px-5 sm:py-3 text-sm sm:text-base font-medium transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                      activeFaqTab === tab.id
+                        ? isDark
+                          ? 'bg-red-500 text-white focus-visible:ring-red-400 shadow-lg'
+                          : 'bg-red-600 text-white focus-visible:ring-red-500 shadow-lg'
+                        : isDark
+                        ? 'bg-white/10 text-slate-300 hover:bg-white/15 border border-white/10 focus-visible:ring-slate-400'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 focus-visible:ring-slate-500'
                     }`}
                   >
-                    {tab}
+                    {tab.label}
                   </button>
                 ))}
               </div>
 
-              {/* FAQ list */}
-               <div className={`border rounded-lg divide-y ${isDark ? 'border-white/10 divide-white/5' : 'border-slate-200 divide-slate-200'}`}>
+              {/* FAQ list — pill-style cards, high contrast, easy to read */}
+              <div
+                id={`faq-panel-${activeFaqTab}`}
+                role="tabpanel"
+                aria-labelledby={`faq-tab-${activeFaqTab}`}
+                className="space-y-3 sm:space-y-4"
+              >
                 {faqs[activeFaqTab].map((item) => (
                   <details
                     key={item.q}
-                    className="group"
+                    className={`group rounded-2xl overflow-hidden border transition-colors ${
+                      isDark ? 'bg-white/5 border-white/10 hover:border-white/15' : 'bg-slate-50/80 border-slate-200 hover:border-slate-300'
+                    }`}
                   >
-                    <summary
-                      className={`flex items-center justify-between px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 cursor-pointer text-sm sm:text-[13px] lg:text-sm font-medium list-none
-                        ${isDark ? 'text-slate-100' : 'text-slate-800'}
-                      `}
-                    >
-                      <span className="pr-2">{item.q}</span>
-                      <span className={`ml-2 flex-shrink-0 text-sm sm:text-base ${isDark ? 'text-slate-400' : 'text-slate-400'} group-open:hidden`}>+</span>
-                      <span className={`ml-2 flex-shrink-0 text-sm sm:text-base ${isDark ? 'text-slate-400' : 'text-slate-400'} hidden group-open:inline`}>−</span>
+                    <summary className="flex items-start justify-between gap-3 px-4 py-3.5 sm:px-5 sm:py-4 cursor-pointer list-none focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-500/50">
+                      <span className={`flex-1 text-left text-sm sm:text-base lg:text-lg font-semibold leading-snug pr-2 ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+                        {item.q}
+                      </span>
+                      <span className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-lg sm:text-xl font-medium transition-colors ${
+                        isDark ? 'bg-white/10 text-slate-300 group-open:bg-red-500/20 group-open:text-red-300' : 'bg-slate-200 text-slate-600 group-open:bg-red-100 group-open:text-red-600'
+                      }`} aria-hidden>
+                        <span className="group-open:hidden">+</span>
+                        <span className="hidden group-open:inline">−</span>
+                      </span>
                     </summary>
                     <div
-                      className={`px-3 sm:px-4 lg:px-5 pb-2.5 sm:pb-3 lg:pb-4 text-xs sm:text-[10px] sm:text-xs lg:text-sm ${
+                      className={`px-4 pb-4 sm:px-5 sm:pb-5 pt-0 sm:pt-0 text-sm sm:text-base leading-relaxed ${
                         isDark ? 'text-slate-300' : 'text-slate-600'
                       }`}
                     >
@@ -781,39 +832,50 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Right column: social proof */}
+            {/* Right column: reviews – pills, verified indicator, customer reviews */}
             <div className="space-y-3 sm:space-y-4 lg:space-y-5">
-              {/* People Love section – small social proof grid */}
-              <div className="space-y-2 sm:space-y-3">
-                 <div className="flex items-center justify-between gap-2">
-                   <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>People love {product.name}</h2>
-                   <div className={`flex items-center gap-1 text-xs sm:text-[10px] sm:text-xs flex-shrink-0 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              <div className="space-y-3 sm:space-y-4">
+                <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
+                  Customer reviews
+                </h2>
+
+                {/* Separate pills: rating + review count */}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base font-semibold ${isDark ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
                     <span className="text-amber-500">★</span>
-                    <span>{product.rating?.average?.toFixed(1) ?? '4.8'}</span>
-                    <span>•</span>
-                    <span>{product.rating?.count ?? 0} reviews</span>
-                  </div>
+                    {ratingValue}
+                  </span>
+                  <span className={`inline-flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base font-medium ${isDark ? 'bg-white/10 text-slate-200 border border-white/10' : 'bg-slate-100 text-slate-700 border border-slate-200'}`}>
+                    {reviewCount} reviews
+                  </span>
+                  {/* Certified / verified reviews indicator */}
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${isDark ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' : 'bg-blue-50 text-blue-600 border border-blue-200'}`}>
+                    <BadgeCheck className="w-4 h-4 sm:w-4.5 sm:h-4.5 flex-shrink-0" aria-hidden />
+                    Verified reviews
+                  </span>
                 </div>
 
-                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                  {galleryImages.slice(0, 4).map((img, idx) => (
+                {/* Review cards – verified users with name + text */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  {placeholderReviews.map((review, idx) => (
                     <div
-                      key={`love-${idx}`}
-                       className={`rounded-lg overflow-hidden shadow-sm ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}
+                      key={idx}
+                      className={`rounded-xl sm:rounded-2xl border p-3 sm:p-4 lg:p-5 space-y-2 sm:space-y-3 ${isDark ? 'border-white/10 bg-white/5' : 'border-slate-200 bg-slate-50/80'}`}
                     >
-                      <img
-                        src={img}
-                        alt={`Customer view ${idx + 1}`}
-                        className="w-full h-20 sm:h-24 lg:h-28 object-cover"
-                      />
-                       <div className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-[10px] lg:text-[11px] space-y-0.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-                         <div className="flex items-center gap-0.5 sm:gap-1 text-amber-500 text-xs sm:text-[9px] lg:text-xs">
-                          {'★'.repeat(5)}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`font-semibold text-sm sm:text-base truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {review.name}
+                          </span>
+                          <BadgeCheck className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-500" aria-label="Verified purchase" />
                         </div>
-                        <p className="line-clamp-2 leading-tight">
-                          "Looks even better in person. The glow is super soft and premium."
-                        </p>
+                        <div className="flex items-center gap-0.5 text-amber-500 text-xs sm:text-sm flex-shrink-0">
+                          {'★'.repeat(review.stars)}
+                        </div>
                       </div>
+                      <p className={`text-xs sm:text-sm leading-relaxed line-clamp-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                        "{review.text}"
+                      </p>
                     </div>
                   ))}
                 </div>

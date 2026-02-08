@@ -58,3 +58,29 @@ export const collections = [
     accent: null,
   },
 ];
+
+/**
+ * Filter options for the Collection page (color swatches + attributes).
+ * Used to build /products?color=... or pass to product listing.
+ */
+export const collectionFilters = {
+  colors: [
+    { id: 'sandstone', name: 'Sandstone', hex: '#E9D5B5' },
+    { id: 'charcoal', name: 'Charcoal', hex: '#1A1A1A' },
+    { id: 'ink', name: 'Ink Black', hex: '#111111' },
+    { id: 'cloud', name: 'Cloud Grey', hex: '#D4D4D8' },
+    { id: 'amber', name: 'Amber Glow', hex: '#F6A623' },
+    { id: 'clay', name: 'Soft Clay', hex: '#E1BFA5' },
+    { id: 'stone', name: 'Stone', hex: '#C4C4C4' },
+    { id: 'chalk', name: 'Chalk White', hex: '#F5F5F5' },
+    { id: 'gold', name: 'Molten Gold', hex: '#F6C36A' },
+    { id: 'terracotta', name: 'Terracotta', hex: '#D38B5D' },
+    { id: 'sunset', name: 'Soft Sunset', hex: '#E58D6E' },
+  ],
+  attributes: [
+    { id: 'table', label: 'Table' },
+    { id: 'portable', label: 'Portable' },
+    { id: 'sculptural', label: 'Sculptural' },
+    { id: 'touch', label: 'Touch' },
+  ],
+};

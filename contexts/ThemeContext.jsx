@@ -5,13 +5,13 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  // Default to 'dark' (black/night theme)
+  // Default to 'light' (white theme); user preference saved in localStorage
   const [theme, setTheme] = useState(() => {
     if (typeof window === 'undefined') {
-      return 'dark';
+      return 'light';
     }
     const savedTheme = window.localStorage.getItem('muvelo-theme');
-    return savedTheme || 'dark';
+    return savedTheme || 'light';
   });
 
   // Save to localStorage whenever theme changes
