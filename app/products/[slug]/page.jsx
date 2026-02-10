@@ -702,13 +702,13 @@ export default function ProductDetailPage() {
                       style={{ left: `${sliderValue}%`, transform: 'translateX(-50%)' }}
                     />
 
-                    {/* Handle — bubble size unchanged; arrow larger for visibility */}
+                    {/* Handle — bubble size unchanged; arrow centered and slightly larger on phone */}
                     <div
                       className="absolute top-1/2 -translate-y-1/2 z-10 pointer-events-none"
-                      style={{ left: `${sliderValue}%`, transform: 'translate(-50%, -50%)' }}
+                      style={{ left: `${sliderValue}%`, transform: 'translateX(-50%)' }}
                     >
                       <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200/80 shadow-md flex items-center justify-center text-slate-500">
-                        <span className="text-[15px] sm:text-[17px] lg:text-[19px] leading-none" aria-hidden>↔</span>
+                        <span className="text-[16px] sm:text-[17px] lg:text-[19px] leading-none" aria-hidden>↔</span>
                       </div>
                     </div>
 
@@ -918,10 +918,10 @@ export default function ProductDetailPage() {
                     className="group snap-start flex-shrink-0 w-[200px] sm:w-[220px] md:w-[240px] lg:w-[260px]"
                   >
                     <motion.article
-                      whileHover={{ y: -4 }}
+                      whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`relative flex flex-col gap-2.5 sm:gap-3 rounded-lg overflow-hidden
-                        ${isDark ? 'bg-gradient-to-b from-white/4 via-white/0 to-white/5 border border-white/10' : 'bg-gradient-to-b from-black/5 via-black/0 to-black/10 border border-slate-200'}
+                      className={`relative flex flex-col gap-2.5 sm:gap-3 rounded-lg overflow-hidden h-full
+                        ${isDark ? 'bg-[#050506] border border-white/12' : 'bg-white border border-slate-200'}
                       `}
                     >
                       <div className={`relative aspect-square overflow-hidden ${isDark ? 'bg-white/5' : 'bg-slate-100/50'}`}>
@@ -964,7 +964,7 @@ export default function ProductDetailPage() {
                             {p.collection}
                           </span>
                         </div>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1 mt-1">
                           {(p.primaryUse || []).slice(0, 2).map((use) => (
                             <span
                               key={use}
