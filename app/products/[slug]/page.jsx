@@ -3,6 +3,7 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { ShieldCheck, RotateCcw, Truck, CreditCard, BadgeCheck } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 import NavBar from '@/components/NavBar';
@@ -95,7 +96,8 @@ export default function ProductDetailPage() {
     { id: 'focus', label: 'Focus', temperatureK: 3200 },
   ];
 
-  const otherProducts = productsData.filter((p) => p.id !== product.id).slice(0, 3);
+  // All other products (excluding current) for recommendations
+  const otherProducts = productsData.filter((p) => p.id !== product.id);
 
   // Placeholder verified reviews (replace with backend real data later)
   const ratingValue = product.rating?.average?.toFixed(1) ?? '4.6';
@@ -198,7 +200,7 @@ export default function ProductDetailPage() {
   return (
     <div className={`min-h-screen flex flex-col ${isDark ? 'bg-gradient-to-b from-black via-[#050505] to-black text-white' : 'bg-gradient-to-b from-[#FAF9F6] via-white to-[#FAF9F6] text-[#1a1a1a]'}`}>
       <NavBar theme={theme} />
-      <ThemeToggle theme={theme} onToggleTheme={toggleTheme} />
+      <ThemeToggle theme={theme} onToggleTheme={toggleTheme} centerOnScroll />
 
       <motion.main
         initial={{ opacity: 0, y: 40 }}
@@ -339,7 +341,7 @@ export default function ProductDetailPage() {
 
               {/* Product name + short description below image (centered) */}
               <div className="text-center space-y-1.5 sm:space-y-2">
-                <h2 className={`text-lg sm:text-xl lg:text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
+                <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
                   {product.name}
                 </h2>
                 <p className={`text-sm sm:text-base leading-snug line-clamp-2 max-w-xl mx-auto ${isDark ? 'text-gray-400' : 'text-[#6B6B6B]'}`}>
@@ -368,9 +370,11 @@ export default function ProductDetailPage() {
                  <h1 className={`text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-bold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
                   {product.name}
                 </h1>
+                {/* Product description section — commented out for now
                  <p className={`text-sm sm:text-xs sm:text-sm lg:text-base leading-relaxed max-w-xl ${isDark ? 'text-gray-300' : 'text-[#6B6B6B]'}`}>
                   {product.longDescription}
                 </p>
+                */}
                  <div className={`flex items-center gap-2 text-sm sm:text-xs sm:text-sm lg:text-base pt-1 ${isDark ? 'text-gray-300' : 'text-[#6B6B6B]'}`}>
                   <span className="inline-flex items-center gap-1">
                     <span className="text-amber-500">★</span>
@@ -421,19 +425,23 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Price & quantity */}
-               <div className={`flex flex-col gap-2 sm:gap-3 border-y py-3 sm:py-4 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-                <div className="flex items-end gap-2 sm:gap-3 flex-wrap">
-                   <span className={`text-xl sm:text-2xl lg:text-3xl font-bold ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
+              {/* Price & quantity — main price, MRP pill and Save pill on same level */}
+              <div className={`flex flex-col gap-2 sm:gap-3 border-y py-3 sm:py-4 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                  <span className={`text-xl sm:text-2xl lg:text-3xl font-bold ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
                     {formatPrice(product.price)}
                   </span>
                   {product.mrp && (
-                     <span className={`text-sm sm:text-xs sm:text-sm lg:text-base line-through ${isDark ? 'text-gray-300' : 'text-[#6B6B6B]'}`}>
+                    <span className={`text-xs sm:text-[13px] font-medium line-through px-2 py-0.5 sm:py-1 rounded-full
+                      ${isDark ? 'text-slate-400 bg-white/10' : 'text-[#6B6B6B] bg-slate-100'}
+                    `}>
                       {formatPrice(product.mrp)}
                     </span>
                   )}
                   {product.mrp && product.price && (
-                    <span className="text-xs sm:text-[10px] sm:text-xs font-semibold text-emerald-600 px-2 py-0.5 sm:py-1 rounded-full bg-emerald-50">
+                    <span className={`text-xs sm:text-[13px] font-semibold px-2 py-0.5 sm:py-1 rounded-full
+                      ${isDark ? 'text-emerald-300 bg-emerald-900/40' : 'text-emerald-600 bg-emerald-50'}
+                    `}>
                       Save&nbsp;
                       {Math.round(((product.mrp - product.price) / product.mrp) * 100)}
                       %
@@ -441,15 +449,19 @@ export default function ProductDetailPage() {
                   )}
                 </div>
 
-                {/* Delivery promise */}
-                 <p className={`text-xs sm:text-[10px] sm:text-xs rounded-full inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 w-fit
-                   ${isDark ? 'text-emerald-300 bg-emerald-900/40' : 'text-emerald-700 bg-emerald-50'}
+                {/* Delivery promise — clear block, readable on all screens */}
+                <div className={`my-4 sm:my-5 lg:my-6 rounded-xl px-4 sm:px-5 lg:px-6 py-3 sm:py-4 max-w-xl
+                   ${isDark ? 'bg-emerald-900/30 border border-emerald-500/20' : 'bg-emerald-50/90 border border-emerald-200/80'}
                  `}>
-                  <span className="text-[10px] sm:text-[10px]">●</span>
-                  <span className="leading-tight">Order today for dispatch in 24 hours. Pan‑India delivery in 7 days.</span>
-                </p>
+                  <p className="flex items-baseline gap-3 sm:gap-4">
+                    <span className={`text-sm sm:text-base lg:text-[15px] flex-shrink-0 leading-none ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} aria-hidden>●</span>
+                    <span className={`text-sm sm:text-base lg:text-[15px] leading-relaxed ${isDark ? 'text-emerald-200' : 'text-emerald-800'}`}>
+                      Order today for dispatch in 24 hours. Pan‑India delivery in 7 days.
+                    </span>
+                  </p>
+                </div>
 
-                <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-1">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                   {/* Quantity */}
                   <div className="flex items-center gap-2 sm:gap-3">
                     <span className={`text-slate-500 uppercase tracking-[0.16em] text-xs sm:text-[9px] sm:text-[10px] lg:text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -488,11 +500,11 @@ export default function ProductDetailPage() {
                 ))}
               </div>
 
-              {/* CTAs — wavy lines flow top to bottom, pause on hover/click; side by side on all screens */}
+              {/* CTAs — same height as FAQ pills (h-11 sm:h-12); prominent, consistent UI */}
               <div className="flex flex-row gap-2 sm:gap-3 lg:gap-4">
                 <motion.button
                   type="button"
-                  className={`group relative flex-1 min-w-0 sm:flex-initial sm:min-w-0 overflow-hidden px-3 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm lg:text-base font-semibold tracking-[0.15em] sm:tracking-[0.2em] uppercase shadow-[0_20px_60px_rgba(15,23,42,0.35)] transition-colors
+                  className={`group relative flex-1 min-w-0 sm:flex-initial sm:min-w-0 h-11 sm:h-12 flex items-center justify-center overflow-hidden px-4 sm:px-8 rounded-full text-sm sm:text-base font-semibold leading-none tracking-[0.15em] sm:tracking-[0.2em] uppercase shadow-[0_20px_60px_rgba(15,23,42,0.35)] transition-colors
                      ${isDark ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-red-600 text-white hover:bg-red-700'}
                    `}
                   whileHover={{ y: -2 }}
@@ -515,7 +527,7 @@ export default function ProductDetailPage() {
 
                 <motion.button
                   type="button"
-                  className={`group relative flex-1 min-w-0 sm:flex-initial sm:min-w-0 overflow-hidden px-3 sm:px-8 py-2.5 sm:py-3 rounded-full border text-xs sm:text-sm lg:text-base font-semibold tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-colors
+                  className={`group relative flex-1 min-w-0 sm:flex-initial sm:min-w-0 h-11 sm:h-12 flex items-center justify-center overflow-hidden px-4 sm:px-8 rounded-full border text-sm sm:text-base font-semibold leading-none tracking-[0.15em] sm:tracking-[0.2em] uppercase transition-colors
                      ${isDark
                        ? 'border-white/30 text-white bg-slate-800 hover:bg-slate-700'
                        : 'border-black/20 text-[#1a1a1a] bg-slate-200 hover:bg-slate-300'}
@@ -538,7 +550,7 @@ export default function ProductDetailPage() {
                 </motion.button>
               </div>
 
-              {/* Policy icons */}
+              {/* Policy icons — original icons; asterisk on "For 48 hours" text only */}
               <div className={`grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-1 text-xs sm:text-[9px] sm:text-[10px] lg:text-[11px] ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                 <div className="flex items-start gap-1.5 sm:gap-2">
                   <div
@@ -549,7 +561,7 @@ export default function ProductDetailPage() {
                     <ShieldCheck size={14} className="sm:w-4 sm:h-4" />
                   </div>
                   <div className="space-y-0.5 min-w-0">
-                    <span className="font-medium block text-xs sm:text-[9px] sm:text-[10px] lg:text-[11px]">1‑year warranty</span>
+                    <span className="font-medium block text-xs sm:text-[9px] sm:text-[10px] lg:text-[11px]">6 months warranty</span>
                     <span className={`text-[11px] md:text-[8px] sm:text-[9px] lg:text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Against manufacturing defects.</span>
                   </div>
                 </div>
@@ -563,9 +575,7 @@ export default function ProductDetailPage() {
                   </div>
                   <div className="space-y-0.5 min-w-0">
                     <span className="font-medium block text-xs sm:text-[9px] sm:text-[10px] lg:text-[11px]">Easy Returns</span>
-                    <span className={`text-[11px] md:text-[8px] sm:text-[9px] lg:text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      48‑hour return window. <a href="#termcondition" className={`underline underline-offset-1 ${isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}>Terms & conditions</a> apply.
-                    </span>
+                    <span className={`text-[11px] md:text-[8px] sm:text-[9px] lg:text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>For 48 hours.*</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-1.5 sm:gap-2">
@@ -578,7 +588,7 @@ export default function ProductDetailPage() {
                   </div>
                   <div className="space-y-0.5 min-w-0">
                     <span className="font-medium block text-xs sm:text-[9px] sm:text-[10px] lg:text-[11px]">Free shipping</span>
-                    <span className={`text-[11px] md:text-[8px] sm:text-[9px] lg:text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Above a minimum cart value.</span>
+                    <span className={`text-[11px] md:text-[8px] sm:text-[9px] lg:text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Free shipping for all.</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-1.5 sm:gap-2">
@@ -605,21 +615,23 @@ export default function ProductDetailPage() {
                 <p>Tested for 10,000+ on/off cycles for everyday reliability.</p>
               </div>
 
-              {/* Accordion sections */}
-               <div className="space-y-1.5 sm:space-y-2 pt-1">
+              {/* Accordion sections — even padding top/bottom and left/right for centered content */}
+              <div className="space-y-1.5 sm:space-y-2 pt-1">
                 {sections.map((section) => (
-                   <div key={section.id} className={`border rounded-lg overflow-hidden ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
+                  <div key={section.id} className={`border rounded-lg overflow-hidden ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
                     <button
                       type="button"
                       onClick={() =>
                         setActiveSection((prev) => (prev === section.id ? '' : section.id))
                       }
-                       className={`w-full flex items-center justify-between px-3 sm:px-4 lg:px-5 py-2.5 sm:py-3 lg:py-3.5 text-left text-sm sm:text-xs sm:text-sm font-medium
-                         ${isDark ? 'text-slate-100' : 'text-slate-800'}
-                       `}
+                      className={`w-full flex items-start justify-between gap-3 px-4 sm:px-5 lg:px-6 py-3 sm:py-3.5 lg:py-4 text-left text-sm sm:text-base font-medium
+                        ${isDark ? 'text-slate-100' : 'text-slate-800'}
+                      `}
                     >
-                      <span>{section.title}</span>
-                      <span className={`text-slate-400 text-base sm:text-lg ${isDark ? 'text-slate-300' : 'text-slate-400'}`}>
+                      <span className="flex-1 min-w-0 text-left leading-snug pr-2">{section.title}</span>
+                      <span className={`flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-base sm:text-lg -mt-1 sm:-mt-1.5 leading-none
+                        ${isDark ? 'text-slate-300 bg-white/5' : 'text-slate-500 bg-slate-100'}
+                      `} aria-hidden>
                         {activeSection === section.id ? '−' : '+'}
                       </span>
                     </button>
@@ -630,9 +642,9 @@ export default function ProductDetailPage() {
                           animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.25, ease: 'easeOut' }}
-                           className={`px-3 sm:px-4 lg:px-5 pb-2.5 sm:pb-3 lg:pb-4 text-sm sm:text-[10px] lg:text-sm space-y-1 sm:space-y-1.5 border-t
-                             ${isDark ? 'text-slate-300 border-white/10' : 'text-slate-600 border-slate-200'}
-                           `}
+                          className={`px-4 sm:px-5 lg:px-6 pt-3 sm:pt-3.5 lg:pt-4 pb-3 sm:pb-3.5 lg:pb-4 text-sm sm:text-[13px] lg:text-sm leading-relaxed space-y-1.5 sm:space-y-2 border-t
+                            ${isDark ? 'text-slate-300 border-white/10' : 'text-slate-600 border-slate-200'}
+                          `}
                         >
                           {section.content.map((line) => (
                             <p key={line}>{line}</p>
@@ -690,13 +702,13 @@ export default function ProductDetailPage() {
                       style={{ left: `${sliderValue}%`, transform: 'translateX(-50%)' }}
                     />
 
-                    {/* Handle */}
+                    {/* Handle — bubble size unchanged; arrow larger for visibility */}
                     <div
                       className="absolute top-1/2 -translate-y-1/2 z-10 pointer-events-none"
                       style={{ left: `${sliderValue}%`, transform: 'translate(-50%, -50%)' }}
                     >
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200/80 shadow-md flex items-center justify-center text-slate-500 text-[10px] sm:text-xs">
-                        ↔
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-200/80 shadow-md flex items-center justify-center text-slate-500">
+                        <span className="text-[15px] sm:text-[17px] lg:text-[19px] leading-none" aria-hidden>↔</span>
                       </div>
                     </div>
 
@@ -727,8 +739,8 @@ export default function ProductDetailPage() {
                 </p>
               </div>
 
-              {/* Pill-style category tabs — easy to find and tap */}
-              <div className="flex flex-wrap gap-2 sm:gap-3" role="tablist" aria-label="FAQ categories">
+              {/* Pill-style category tabs — same height as CTAs (h-11 sm:h-12) for consistent UI */}
+              <div className="flex flex-wrap gap-2 sm:gap-3 items-center" role="tablist" aria-label="FAQ categories">
                 {[
                   { id: 'product', label: 'Product' },
                   { id: 'troubleshooting', label: 'Troubleshooting' },
@@ -742,7 +754,7 @@ export default function ProductDetailPage() {
                     aria-controls={`faq-panel-${tab.id}`}
                     id={`faq-tab-${tab.id}`}
                     onClick={() => setActiveFaqTab(tab.id)}
-                    className={`rounded-full px-4 py-2.5 sm:px-5 sm:py-3 text-sm sm:text-base font-medium transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                    className={`h-11 sm:h-12 flex items-center justify-center rounded-full px-4 sm:px-5 text-sm sm:text-base font-semibold leading-none transition-all whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                       activeFaqTab === tab.id
                         ? isDark
                           ? 'bg-red-500 text-white focus-visible:ring-red-400 shadow-lg'
@@ -772,10 +784,10 @@ export default function ProductDetailPage() {
                     }`}
                   >
                     <summary className="flex items-start justify-between gap-3 px-4 py-3.5 sm:px-5 sm:py-4 cursor-pointer list-none focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-500/50">
-                      <span className={`flex-1 text-left text-sm sm:text-base lg:text-lg font-semibold leading-snug pr-2 ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+                      <span className={`flex-1 text-left text-sm sm:text-base lg:text-lg font-semibold leading-snug pr-2 min-w-0 ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
                         {item.q}
                       </span>
-                      <span className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-lg sm:text-xl font-medium transition-colors ${
+                      <span className={`flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-lg sm:text-xl font-medium transition-colors -mt-1.5 sm:-mt-2 ${
                         isDark ? 'bg-white/10 text-slate-300 group-open:bg-red-500/20 group-open:text-red-300' : 'bg-slate-200 text-slate-600 group-open:bg-red-100 group-open:text-red-600'
                       }`} aria-hidden>
                         <span className="group-open:hidden">+</span>
@@ -796,7 +808,7 @@ export default function ProductDetailPage() {
               {/* Comparison table – directly under FAQs */}
               <div className="space-y-2 sm:space-y-3">
                 <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
-                  Why Muvelo vs a generic lamp?
+                  Why Muvelo vs a Generic Lamp?
                 </h2>
                  <div className={`overflow-hidden rounded-lg border ${isDark ? 'border-white/10 bg-white/5' : 'border-slate-200 bg-white'}`}>
                    <div className={`grid grid-cols-3 text-xs sm:text-[10px] lg:text-xs font-medium border-b px-2 sm:px-3 lg:px-4 py-2 sm:py-2.5
@@ -883,10 +895,10 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Recommended lamps – premium horizontal scroller */}
-           <div className="mt-6 sm:mt-8 lg:mt-10 space-y-2 sm:space-y-3">
+          {/* Recommended lamps – 1:1 cards, same design language as products page */}
+          <div className="mt-6 sm:mt-8 lg:mt-10 space-y-4 sm:space-y-5">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                 <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
+              <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-tight ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
                 You may also like
               </h2>
               <span className={`text-xs sm:text-[10px] lg:text-[11px] uppercase tracking-[0.18em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -894,36 +906,87 @@ export default function ProductDetailPage() {
               </span>
             </div>
 
-             <div className="relative">
-               <div
-                 className="flex gap-3 sm:gap-4 lg:gap-5 overflow-x-auto pb-2 sm:pb-3 scrollbar-hide"
-                 style={{ scrollSnapType: 'x mandatory' }}
-               >
-                {otherProducts.slice(0, 5).map((p) => (
-                  <div
+            <div className="relative">
+              <div
+                className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-2 sm:pb-3 scrollbar-hide"
+                style={{ scrollSnapType: 'x mandatory' }}
+              >
+                {otherProducts.map((p) => (
+                  <Link
                     key={p.id}
-                     className={`snap-start flex-shrink-0 w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px] xl:w-[240px] rounded-lg border overflow-hidden shadow-[0_14px_40px_rgba(15,23,42,0.16)]
-                       ${isDark ? 'border-white/10 bg-white/5' : 'border-slate-200 bg-white'}
-                     `}
+                    href={`/products/${p.slug}`}
+                    className="group snap-start flex-shrink-0 w-[200px] sm:w-[220px] md:w-[240px] lg:w-[260px]"
                   >
-                    <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden">
-                      <img
-                        src={p.images?.on}
-                        alt={p.name}
-                        className="w-full h-full object-cover"
-                        draggable={false}
-                      />
-                    </div>
-                     <div className="px-2 sm:px-3 py-2 sm:py-2.5 space-y-1 sm:space-y-1.5">
-                       <p className={`text-xs sm:text-[11px] font-medium line-clamp-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        {p.name}
-                      </p>
-                       <p className={`text-xs sm:text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{p.collection}</p>
-                       <p className={`text-xs sm:text-[11px] font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        {formatPrice(p.price)}
-                      </p>
-                    </div>
-                  </div>
+                    <motion.article
+                      whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`relative flex flex-col gap-2.5 sm:gap-3 rounded-lg overflow-hidden
+                        ${isDark ? 'bg-gradient-to-b from-white/4 via-white/0 to-white/5 border border-white/10' : 'bg-gradient-to-b from-black/5 via-black/0 to-black/10 border border-slate-200'}
+                      `}
+                    >
+                      <div className={`relative aspect-square overflow-hidden ${isDark ? 'bg-white/5' : 'bg-slate-100/50'}`}>
+                        <motion.img
+                          src={p.images?.on}
+                          alt={p.name}
+                          className="w-full h-full object-cover"
+                          draggable={false}
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        />
+                        {p.badge && (
+                          <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] tracking-[0.12em] uppercase backdrop-blur-md z-10
+                            ${isDark ? 'bg-black/70 text-gray-100' : 'bg-white/80 text-black'}
+                          `}>
+                            {p.badge}
+                          </span>
+                        )}
+                        <div className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] backdrop-blur-md z-10
+                          ${isDark ? 'bg-black/70 text-amber-300' : 'bg-white/85 text-amber-600'}
+                        `}>
+                          ★ {p.rating?.average?.toFixed(1) ?? '4.8'}
+                        </div>
+                      </div>
+
+                      <div className="px-3 sm:px-3.5 pb-3 sm:pb-3.5 pt-0 flex flex-col gap-2">
+                        <div className="flex flex-col gap-0.5 sm:gap-1">
+                          <h3 className={`text-sm sm:text-base font-semibold tracking-wide line-clamp-1 ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
+                            {p.name}
+                          </h3>
+                          <p className={`text-[10px] sm:text-xs line-clamp-2 leading-relaxed ${isDark ? 'text-slate-400' : 'text-[#6B6B6B]'}`}>
+                            {p.shortDescription}
+                          </p>
+                        </div>
+                        <div className="flex items-end justify-between gap-2">
+                          <span className={`text-sm sm:text-base font-semibold ${isDark ? 'text-white' : 'text-[#1a1a1a]'}`}>
+                            {formatPrice(p.price)}
+                          </span>
+                          <span className={`text-[10px] sm:text-xs uppercase tracking-[0.14em] ${isDark ? 'text-slate-400' : 'text-[#6B6B6B]'}`}>
+                            {p.collection}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {(p.primaryUse || []).slice(0, 2).map((use) => (
+                            <span
+                              key={use}
+                              className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-white/5 text-slate-300' : 'bg-black/5 text-slate-600'}`}
+                            >
+                              {use}
+                            </span>
+                          ))}
+                          {p.flags?.isBestseller && (
+                            <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-red-500/20 text-red-300' : 'bg-red-500/15 text-red-600'}`}>
+                              Bestseller
+                            </span>
+                          )}
+                          {p.flags?.isNew && (
+                            <span className={`text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full ${isDark ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-500/15 text-emerald-600'}`}>
+                              New
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </motion.article>
+                  </Link>
                 ))}
               </div>
             </div>
